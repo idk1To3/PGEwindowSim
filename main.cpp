@@ -1,5 +1,6 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
+#define PGEWS_APPLICATION
 #include "PGEwindowsim.h"
 //#include <memory>
 
