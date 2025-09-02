@@ -513,19 +513,19 @@ namespace PGEws
 				Window& win = *windowList[focusIndex];
 				int scaledSizeX = win.sizeX * win.scale;
 				int scaledSizeY = win.sizeY * win.scale;
-                                if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 7, win.posY + scaledSizeY))
+                                if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
 				{
 					resizingWindowRight = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
-                                else if (rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
+                                else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
 				{
 					resizingWindowLeft = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
-                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY + scaledSizeY, win.posX + scaledSizeX + 7, win.posY + scaledSizeY + 8))
+                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY + scaledSizeY, win.posX + scaledSizeX + 8, win.posY + scaledSizeY + 8))
 				{
 					resizingWindowDown = true;
 					if (mouseX < win.posX + 12)
@@ -533,7 +533,7 @@ namespace PGEws
 					else if (mouseX > win.posX + scaledSizeX - 12)
 						resizingWindowRight = true;
 				}
-                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY - win.bannerHeight - 8, win.posX + scaledSizeX + 7, win.posY - win.bannerHeight))
+                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight - 8, win.posX + scaledSizeX + 8, win.posY - win.bannerHeight))
                                 {
                                         resizingWindowUp = true;
                                         if(mouseX < win.posX + 12)
@@ -563,8 +563,8 @@ namespace PGEws
                         }
                         else if(resizingWindowUp && windowList[focusIndex]->canResizeY)
                         {
-				newSizeY = windowList[focusIndex]->sizeY * scale + windowList[focusIndex]->posY - ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale;
-				windowList[focusIndex]->posY = ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale;
+				newSizeY = windowList[focusIndex]->sizeY * scale + windowList[focusIndex]->posY - ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale + 1;
+				windowList[focusIndex]->posY = ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale - 1;
                         }
                         else
                         {
@@ -608,7 +608,7 @@ namespace PGEws
 						continue;
 					int scale = windowList[*i]->scale;
 
-					if (mousePosY >= windowList[*i]->posY - windowList[*i]->bannerHeight && mousePosY < windowList[*i]->posY + windowList[*i]->sizeY * scale)
+					if (mousePosY > windowList[*i]->posY - windowList[*i]->bannerHeight && mousePosY < windowList[*i]->posY + windowList[*i]->sizeY * scale)
 						if (mousePosX >= windowList[*i]->posX && mousePosX < windowList[*i]->posX + windowList[*i]->sizeX * scale)
 						{
 							int oldFocusIndex = focusIndex;

@@ -13,13 +13,13 @@ public:
 public:
 	bool wOnUserCreate() override
 	{
-                bannerHeight = 30;
+//                bannerHeight = 30;
 		return true;
 	};
 
 	bool wOnUserUpdate(float fElapsedTime) override
 	{
-                if(!inFocus)
+                if(inFocus)
                         return true;
                 
 		for (int x = 0; x < WindowWidth(); x++)
@@ -130,14 +130,14 @@ public:
 	bool OnUserCreate() override
 	{
 		win.addNewWindow(new LeftWindow(this,  left0, "can do all", 40, 40, 0, 10));
-		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 10, PGEws::CanMove | PGEws::CanClose));
-		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 10, ~(PGEws::CanMove)));
-		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
-
-		win.setMaxFPS(left0, 1.0f);
-		win.setMaxFPS(right0, 10.0f);
-		win.setScale(left0, 7);
-		win.setScale(menu, 1);
+//		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 10, PGEws::CanMove | PGEws::CanClose));
+//		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 10, ~(PGEws::CanMove)));
+//		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
+//
+//		win.setMaxFPS(left0, 1.0f);
+//		win.setMaxFPS(right0, 10.0f);
+//		win.setScale(left0, 7);
+//		win.setScale(menu, 1);
 
 		return true;
 	}
@@ -145,27 +145,36 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		Clear(olc::BLACK);
+
+                for(int x = 0; x < ScreenWidth(); x++)
+                        for(int y = 0; y < ScreenHeight(); y++)
+                        {
+                                Draw(x,y,((x+y) % 2 == 0 ? olc::BLACK : olc::WHITE));
+                                if(x % 8 == 0 || y % 8 == 0)
+                                        Draw(x,y,olc::RED);
+                        }
+
 		win.updateAll(fElapsedTime);
 
-		int windowMenuIndex = win.getIndexOfId(menu);
-		int whichWindowToFocus = ((WindowMenu*)win.windowList[windowMenuIndex])->shouldBeFocused;
-		if (whichWindowToFocus != -1)
-			win.changeFocusedWindow(whichWindowToFocus);
-
-		if (GetKey(olc::Key::A).bPressed)
-			win.addNewWindow(new LeftWindow(this, id++, "added window", 50, 50, 400, 400));
-
-		if (GetKey(olc::Key::DEL).bPressed)
-			win.deleteWindow(win.getFocusedId());
-
-		if (GetKey(olc::Key::F).bPressed)
-			win.changeFocusedWindow(1);
-
-		if (GetKey(olc::Key::O).bPressed)
-			win.setHidden(win.getFocusedId(), true);
-
-		if (GetKey(olc::Key::P).bPressed)
-			win.setHidden(win.getFocusedId(), false);
+//		int windowMenuIndex = win.getIndexOfId(menu);
+//		int whichWindowToFocus = ((WindowMenu*)win.windowList[windowMenuIndex])->shouldBeFocused;
+//		if (whichWindowToFocus != -1)
+//			win.changeFocusedWindow(whichWindowToFocus);
+//
+//		if (GetKey(olc::Key::A).bPressed)
+//			win.addNewWindow(new LeftWindow(this, id++, "added window", 50, 50, 400, 400));
+//
+//		if (GetKey(olc::Key::DEL).bPressed)
+//			win.deleteWindow(win.getFocusedId());
+//
+//		if (GetKey(olc::Key::F).bPressed)
+//			win.changeFocusedWindow(1);
+//
+//		if (GetKey(olc::Key::O).bPressed)
+//			win.setHidden(win.getFocusedId(), true);
+//
+//		if (GetKey(olc::Key::P).bPressed)
+//			win.setHidden(win.getFocusedId(), false);
 
 		return true;
 	}
@@ -181,7 +190,8 @@ public:
 int main()
 {
 	Application demo;
-	if (demo.Construct(800, 550, 1, 1))
+//	if (demo.Construct(800, 550, 1, 1))
+	if (demo.Construct(80, 80, 8, 8)) 
 		demo.Start();
 
 	return 0;
