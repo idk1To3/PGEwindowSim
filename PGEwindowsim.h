@@ -196,6 +196,7 @@ private:
 	bool resizingWindowLeft = false;
 	bool resizingWindowDown = false;
 	bool resizingWindowRight = false;
+	bool resizingWindowUp = false;
 	int focusIndex = -1;
 
 public:
@@ -418,7 +419,7 @@ private:
 		if (!windowList[focusIndex]->canResizeX && !windowList[focusIndex]->canResizeY)
 			return;
 		
-		if (!(resizingWindowLeft || resizingWindowDown || resizingWindowRight))
+		if (!(resizingWindowLeft || resizingWindowDown || resizingWindowRight || resizingWindowUp))
 		{
 			if (pge->GetMouse(0).bPressed)
 			{
@@ -427,19 +428,19 @@ private:
 				Window& win = *windowList[focusIndex];
 				int scaledSizeX = win.sizeX * win.scale;
 				int scaledSizeY = win.sizeY * win.scale;
-				if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 7, win.posY + scaledSizeY))
+                                if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 7, win.posY + scaledSizeY))
 				{
 					resizingWindowRight = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
-				else if (rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
+                                else if (rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
 				{
 					resizingWindowLeft = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
-				else if(rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY + scaledSizeY, win.posX + scaledSizeX + 7, win.posY + scaledSizeY + 8))
+                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY + scaledSizeY, win.posX + scaledSizeX + 7, win.posY + scaledSizeY + 8))
 				{
 					resizingWindowDown = true;
 					if (mouseX < win.posX + 12)
@@ -447,24 +448,43 @@ private:
 					else if (mouseX > win.posX + scaledSizeX - 12)
 						resizingWindowRight = true;
 				}
+                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 8, win.posY - win.bannerHeight - 8, win.posX + scaledSizeX + 7, win.posY - win.bannerHeight))
+                                {
+                                        resizingWindowUp = true;
+                                        if(mouseX < win.posX + 12)
+                                                resizingWindowLeft = true;
+                                        else if(mouseX > win.posX + scaledSizeX - 12)
+                                                resizingWindowUp = true;
+                                }
 			}
 		}
 		else
 		{
 			int scale = windowList[focusIndex]->scale;
+                        int bannerHeight = windowList[focusIndex]->bannerHeight;
 			if (pge->GetMouse(0).bReleased)
 			{
 				resizingWindowLeft = false;
 				resizingWindowDown = false;
 				resizingWindowRight = false;
+                                resizingWindowUp = false;
 			}
 			int newSizeX;
 			int newSizeY;
 
-			if (resizingWindowDown && windowList[focusIndex]->canResizeY)
+                        if (resizingWindowDown && windowList[focusIndex]->canResizeY)
+                        {
 				newSizeY = pge->GetMouseY() - windowList[focusIndex]->posY;
-			else
+                        }
+                        else if(resizingWindowUp && windowList[focusIndex]->canResizeY)
+                        {
+				newSizeY = windowList[focusIndex]->sizeY * scale + windowList[focusIndex]->posY - ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale;
+				windowList[focusIndex]->posY = ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale;
+                        }
+                        else
+                        {
 				newSizeY = windowList[focusIndex]->sizeY * scale;
+                        }
 
 			if (resizingWindowRight && windowList[focusIndex]->canResizeX)
 			{
@@ -472,8 +492,8 @@ private:
 			}
 			else if(resizingWindowLeft && windowList[focusIndex]->canResizeX)
 			{
-				newSizeX = windowList[focusIndex]->sizeX * scale + windowList[focusIndex]->posX - pge->GetMouseX() - 1;
-				windowList[focusIndex]->posX = pge->GetMouseX() + 1;
+				newSizeX = windowList[focusIndex]->sizeX * scale + windowList[focusIndex]->posX - (pge->GetMouseX()/scale + 1)*scale;
+				windowList[focusIndex]->posX = (pge->GetMouseX()/scale + 1)*scale;
 			}
 			else
 			{

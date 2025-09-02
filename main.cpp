@@ -128,7 +128,7 @@ private:
 public:
 	bool OnUserCreate() override
 	{
-		win.addNewWindow(new LeftWindow(this,  left0, "cant resize horizontally", 40, 40, 0, 10, ~(PGEws::CanResizeX)));
+		win.addNewWindow(new LeftWindow(this,  left0, "can do all", 40, 40, 0, 10));
 		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 10, PGEws::CanMove | PGEws::CanClose));
 		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 10, ~(PGEws::CanMove)));
 		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
