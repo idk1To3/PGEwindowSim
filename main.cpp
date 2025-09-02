@@ -13,7 +13,6 @@ public:
 public:
 	bool wOnUserCreate() override
 	{
-//                bannerHeight = 30;
 		return true;
 	};
 
@@ -129,14 +128,14 @@ private:
 public:
 	bool OnUserCreate() override
 	{
-		win.addNewWindow(new LeftWindow(this,  left0, "can do all", 40, 40, 0, 10));
-//		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 10, PGEws::CanMove | PGEws::CanClose));
-//		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 10, ~(PGEws::CanMove)));
+		win.addNewWindow(new LeftWindow(this,  left0, "Can do all", 20, 10, 0, 0));
+//		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 0, PGEws::CanMove | PGEws::CanClose));
+//		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 0, ~(PGEws::CanMove)));
 //		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
 //
 //		win.setMaxFPS(left0, 1.0f);
 //		win.setMaxFPS(right0, 10.0f);
-//		win.setScale(left0, 7);
+//		win.setScale(left0, 4);
 //		win.setScale(menu, 1);
 
 		return true;

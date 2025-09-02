@@ -33,7 +33,7 @@ namespace PGEws
                 bool hidden = false;
 
                 bool hasBanner = true;
-                int bannerHeight = 10;
+                int bannerHeight = 11;
                 std::string name;
                 int nameMax = 0;
 
@@ -158,7 +158,7 @@ namespace PGEws
 
         //Window implementation
 
-        Window::Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions) : id(id), pge(pge), name(name), posX(posX), posY(posY)
+        Window::Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions) : id(id), pge(pge), name(name), posX(posX+1), posY(posY+bannerHeight)
         {
                 changePermissions(permissions);
 
@@ -185,7 +185,10 @@ namespace PGEws
                         return;
 
                 pge->FillRect(posX, posY - bannerHeight, sizeX*scale, bannerHeight-1, (inFocus ? olc::Pixel(190, 190, 190) : olc::Pixel(140, 140, 140)));
-                pge->DrawRect(posX-1, posY - bannerHeight, sizeX*scale+1, bannerHeight-1, olc::Pixel(110, 110, 110));
+//                pge->DrawRect(posX-1, posY - bannerHeight, sizeX*scale+1, bannerHeight-1, olc::Pixel(238, 238, 238));
+                pge->DrawLine(posX-1, posY - bannerHeight, posX+sizeX*scale, posY - bannerHeight, olc::Pixel(238,238,238));
+                pge->DrawLine(posX-1, posY - bannerHeight + 1, posX-1, posY - 1, olc::Pixel(238,238,238));
+                pge->DrawLine(posX+sizeX*scale, posY - bannerHeight + 1, posX+sizeX*scale, posY - 1, olc::Pixel(110,110,110));
                 if (sizeX*scale > 10)
                 {
                         pge->DrawString(posX + 1, posY - bannerHeight + 2, name.substr(0, nameMax), olc::BLACK);
@@ -585,8 +588,13 @@ namespace PGEws
 				newSizeX = windowList[focusIndex]->sizeX * scale;
 			}
 
-			if (newSizeX < 1)
-				newSizeX = scale;
+                        if (newSizeX < 11)
+                        {
+                                if(windowList[focusIndex]->canClose)
+                                        newSizeX = (10/scale + 1)*scale;
+                                else if(newSizeX < 1)
+                                        newSizeX = scale;
+                        }
 			if (newSizeY < 1)
 				newSizeY = scale;
 			windowList[focusIndex]->setSize(newSizeX/scale, newSizeY/scale);
