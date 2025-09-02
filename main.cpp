@@ -3,7 +3,7 @@
 #include "PGEwindowsim.h"
 //#include <memory>
 
-class LeftWindow : public Window
+class LeftWindow : public PGEws::Window
 {
 public:
 	LeftWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
@@ -32,7 +32,7 @@ public:
 	};
 };
 
-class RightWindow : public Window
+class RightWindow : public PGEws::Window
 {
 public:
 	RightWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
@@ -53,7 +53,7 @@ public:
 	};
 };
 
-class WindowMenu : public Window
+class WindowMenu : public PGEws::Window
 {
 public:
 	WindowMenu(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
@@ -112,7 +112,7 @@ public:
 	}
 
 private:
-	WindowList win;
+        PGEws::WindowList win;
 
         enum ids
         {
