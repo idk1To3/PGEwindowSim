@@ -22,7 +22,7 @@ namespace PGEws
 
         public:
                 olc::PixelGameEngine* const pge;
-                WindowList* windowList;
+                WindowList* parentWindowList;
 
                 unsigned int const id;
 
@@ -63,6 +63,8 @@ namespace PGEws
 
                 int WindowWidth();
                 int WindowHeight();
+
+                Window* getWindow(unsigned int id);
 
         private:
                 void drawBanner();
@@ -178,6 +180,16 @@ namespace PGEws
         int Window::WindowWidth() { return sizeX; }
         int Window::WindowHeight() { return sizeY; }
 
+        Window* Window::getWindow(unsigned int id)
+        {
+                int index = parentWindowList->getIndexOfId(id);
+
+                if(index == -1)
+                        return nullptr;
+                else 
+                        return parentWindowList->windowList[index];
+        }
+
 
         void Window::drawBanner()
         {
@@ -185,10 +197,12 @@ namespace PGEws
                         return;
 
                 pge->FillRect(posX, posY - bannerHeight, sizeX*scale, bannerHeight-1, (inFocus ? olc::Pixel(190, 190, 190) : olc::Pixel(140, 140, 140)));
-//                pge->DrawRect(posX-1, posY - bannerHeight, sizeX*scale+1, bannerHeight-1, olc::Pixel(238, 238, 238));
-                pge->DrawLine(posX-1, posY - bannerHeight, posX+sizeX*scale, posY - bannerHeight, olc::Pixel(238,238,238));
-                pge->DrawLine(posX-1, posY - bannerHeight + 1, posX-1, posY - 1, olc::Pixel(238,238,238));
+
+                pge->DrawLine(posX-1, posY - bannerHeight, posX+sizeX*scale, posY - bannerHeight, (inFocus ? olc::Pixel(255, 255, 255) : olc::Pixel(193, 193, 193)));
+                pge->DrawLine(posX-1, posY - bannerHeight + 1, posX-1, posY - 1, (inFocus ? olc::Pixel(255, 255, 255) : olc::Pixel(193, 193, 193)));
+
                 pge->DrawLine(posX+sizeX*scale, posY - bannerHeight + 1, posX+sizeX*scale, posY - 1, olc::Pixel(110,110,110));
+
                 if (sizeX*scale > 10)
                 {
                         pge->DrawString(posX + 1, posY - bannerHeight + 2, name.substr(0, nameMax), olc::BLACK);
@@ -303,6 +317,7 @@ namespace PGEws
 		for (int i = 0; i < windowList.size(); i++)
 			if (windowList[i]->id == id)
 				return i;
+
 		return -1;
 	}
 
@@ -310,10 +325,10 @@ namespace PGEws
 	{
 		resizeWindow();
 
+		moveWindows();
+
 		for (auto i = orderedIndices.rbegin(); i != orderedIndices.rend(); i++)
 			windowList[*i]->update(fElapsedTime);
-
-		moveWindows();
 
 		for (auto i = orderedIndices.begin(); i != orderedIndices.end(); ++i)
 		{
@@ -470,6 +485,8 @@ namespace PGEws
 			focusIndex = 0;
 			windowList[0]->inFocus = true;
 		}
+
+                window->parentWindowList = this;
 
 		pge->SetDrawTarget(windowList.back()->content.get());
 		if (!windowList.back()->wOnUserCreate())
