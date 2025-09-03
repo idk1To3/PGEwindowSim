@@ -48,8 +48,9 @@ namespace PGEws
 
                 bool resizing = false;
 
-                std::string name;
                 int nameMax = 0;
+                std::string name;
+                std::string nameTrimmed;
 
                 int posX;
                 int posY;
@@ -91,6 +92,8 @@ namespace PGEws
 
                 void drawBorder();
 
+                void trimName();
+
         public:
                 void lClear(olc::Pixel color);
 
@@ -101,6 +104,8 @@ namespace PGEws
                 void setHidden(bool value);
 
                 void setIfHasBanner(bool value);
+
+                void setBannerHeight(int height);
 
                 void setPosition(int x, int y);
 
@@ -160,6 +165,10 @@ namespace PGEws
 
                 bool setHidden(unsigned int id, bool value);
 
+                bool setIfHasBanner(unsigned int id, bool value);
+
+                bool setBannerHeight(unsigned int id, int value);
+
                 void destroyAll();
 
         private:
@@ -189,6 +198,7 @@ namespace PGEws
                 sizeX = width;
                 sizeY = height;
                 nameMax = (sizeX - (canClose ? 18 : 2)) / 8;
+                trimName();
                 content = std::make_shared<olc::Sprite>(width, height);
         };
 
@@ -248,18 +258,40 @@ namespace PGEws
 
                 pge->DrawLine(posX+sizeX*scale, posY - bannerHeight + 1, posX+sizeX*scale, posY - 1, olc::Pixel(110,110,110));
 
-                if (sizeX*scale > 10)
+                if (sizeX*scale >= 10)
                 {
-                        pge->DrawString(posX + 1, posY - bannerHeight + 2, name.substr(0, nameMax), olc::BLACK);
+                        pge->DrawString(posX + 1, posY - bannerHeight + 2, nameTrimmed, olc::BLACK);
                         if (canClose)
-                                pge->DrawString(posX + sizeX*scale - 9, posY - bannerHeight + 2, "X", olc::DARK_RED);
+                                pge->DrawString(posX + sizeX*scale - 9, posY - bannerHeight/2 - 4, "X", olc::DARK_RED);
                 }
         }
 
         void Window::drawBorder()
         {
-                olc::Pixel color(110, 110, 110);
-                pge->DrawRect(posX - 1, posY - 1, sizeX*scale + 1, sizeY*scale + 1, color);
+                pge->DrawRect(posX - 1, posY - 1, sizeX*scale + 1, sizeY*scale + 1, (inFocus ? olc::Pixel(110,110,110) : olc::Pixel(50, 50, 50)));
+        }
+
+        void Window::trimName()
+        {
+                nameTrimmed.clear();
+
+                int length = 0;
+
+                for(const auto& c : name)
+                {
+                        if(c == '\n')
+                        {
+                                length = 0;
+                                nameTrimmed += "\n";
+                        }
+                        else if(length < nameMax)
+                        {
+                                nameTrimmed += c;
+                                length++;
+                        }
+                }
+
+                std::cout << nameMax << ": " << nameTrimmed << "|\n";
         }
 
 
@@ -292,6 +324,7 @@ namespace PGEws
         {
                 sizeX = w; sizeY = h;
                 nameMax = (sizeX*scale - (canClose ? 18 : 2)) / 8;
+                trimName();
 
                 std::shared_ptr<olc::Sprite> newContent = std::make_shared<olc::Sprite>(sizeX, sizeY);
                 pge->SetDrawTarget(newContent.get());
@@ -303,6 +336,7 @@ namespace PGEws
         {
                 this->scale = scale;
                 nameMax = (sizeX*scale - (canClose ? 18 : 2)) / 8;
+                trimName();
         }
 
 
@@ -502,6 +536,26 @@ namespace PGEws
 		}
 		return false;
 	}
+
+        bool WindowList::setIfHasBanner(unsigned int id, bool value)
+        {
+                int i = getIndexOfId(id);
+                if(i == -1) return false;
+
+                windowList[i]->setIfHasBanner(value);
+
+                return true;
+        }
+
+        bool WindowList::setBannerHeight(unsigned int id, int value)
+        {
+                int i = getIndexOfId(id);
+                if(i == -1) return false;
+
+                windowList[i]->bannerHeight = value;
+
+                return true;
+        }
 
 	void WindowList::destroyAll()
 	{

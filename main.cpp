@@ -33,6 +33,8 @@ public:
 
                 if(hasGainedFocus())
                         std::cout << "Gained focus " << getName() << "\n";
+                if(hasLostFocus())
+                        std::cout << "Lost focus " << getName() << "\n";
                 
 		for (int x = 0; x < WindowWidth(); x++)
 			for (int y = 0; y < WindowHeight(); y++)
@@ -71,6 +73,8 @@ public:
 
                 if(hasGainedFocus())
                         std::cout << "Gained focus " << getName() << "\n";
+                if(hasLostFocus())
+                        std::cout << "Lost focus " << getName() << "\n";
 
 		return true;
 	};
@@ -145,7 +149,7 @@ private:
 public:
 	bool OnUserCreate() override
 	{
-		win.addNewWindow(new LeftWindow(this,  left0, "Can do all", 20, 10, 0, 0));
+		win.addNewWindow(new LeftWindow(this,  left0, "Can do all\nSecond line", 20, 10, 0, 0));
 		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 0, ~(PGEws::CanMove)));
 		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 0, PGEws::CanMove | PGEws::CanClose));
 		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
@@ -154,6 +158,9 @@ public:
 		win.setMaxFPS(right0, 10.0f);
 		win.setScale(left0, 7);
 		win.setScale(menu, 1);
+
+//                win.setIfHasBanner(left0, false);
+                win.setBannerHeight(left0, 20);
 
 		return true;
 	}
