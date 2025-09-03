@@ -17,6 +17,8 @@ namespace PGEws
 
         class Window
         {
+                friend class WindowList;
+
         public:
                 Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1);
 
@@ -27,20 +29,27 @@ namespace PGEws
                 unsigned int const id;
 
         public:
-                std::shared_ptr<olc::Sprite> content;
-
-                bool inFocus = false;
                 bool hidden = false;
 
                 bool hasBanner = true;
                 int bannerHeight = 11;
-                std::string name;
-                int nameMax = 0;
 
                 bool canClose = true;
                 bool canMove = true;
                 bool canResizeX = true;
                 bool canResizeY = true;
+
+        private:
+                std::shared_ptr<olc::Sprite> content;
+
+                bool inFocus = false;
+                bool lostFocus = false;
+                bool gainedFocus = false;
+
+                bool resizing = false;
+
+                std::string name;
+                int nameMax = 0;
 
                 int posX;
                 int posY;
@@ -58,11 +67,22 @@ namespace PGEws
                 olc::vi2d lGetMousePos();
                 int lGetMouseX();
                 int lGetMouseY();
+                bool lMouseInBounds();
 
-                void lClear(olc::Pixel color);
+                int getScale();
 
                 int WindowWidth();
                 int WindowHeight();
+
+                int realWindowWidth();
+                int realWindowHeight();
+
+                bool isInFocus();
+                bool hasLostFocus();
+                bool hasGainedFocus();
+
+                bool isResizing();
+                std::string getName();
 
                 Window* getWindow(unsigned int id);
 
@@ -72,6 +92,8 @@ namespace PGEws
                 void drawBorder();
 
         public:
+                void lClear(olc::Pixel color);
+
                 void changePermissions(int flags);
 
                 void setMaxFps(bool value, float fps = 50.0f);
@@ -175,10 +197,33 @@ namespace PGEws
         int Window::lGetMouseX() { return (pge->GetMouseX() - posX)/scale; }
         int Window::lGetMouseY() { return (pge->GetMouseY() - posY)/scale; }
 
-        void Window::lClear(olc::Pixel color) { pge->FillRect(0, 0, sizeX, sizeY, color); }
+        bool Window::lMouseInBounds()
+        {
+                if(pge->GetMouseX() < posX)
+                        return false;
+                if(pge->GetMouseY() < posY)
+                        return false;
+                if(lGetMouseX() > WindowWidth())
+                        return false;
+                if(lGetMouseY() > WindowHeight())
+                        return false;
+                return true;
+        }
+
+        int Window::getScale() { return scale; }
 
         int Window::WindowWidth() { return sizeX; }
         int Window::WindowHeight() { return sizeY; }
+
+        int Window::realWindowWidth() { return sizeX + 2; }
+        int Window::realWindowHeight() { return sizeY + 1 + (hasBanner ? bannerHeight : 1); }
+
+        bool Window::isInFocus() { return inFocus; }
+        bool Window::hasLostFocus() { return lostFocus; }
+        bool Window::hasGainedFocus() { return gainedFocus; }
+
+        bool Window::isResizing() { return resizing; }
+        std::string Window::getName() { return name; }
 
         Window* Window::getWindow(unsigned int id)
         {
@@ -217,6 +262,8 @@ namespace PGEws
                 pge->DrawRect(posX - 1, posY - 1, sizeX*scale + 1, sizeY*scale + 1, color);
         }
 
+
+        void Window::lClear(olc::Pixel color) { pge->FillRect(0, 0, sizeX, sizeY, color); }
 
         void Window::changePermissions(int flags)
         {
@@ -282,6 +329,10 @@ namespace PGEws
                         {
                                 if (!wOnUserUpdate(frameTimer))
                                         destruct = true;
+
+                                lostFocus = false;
+                                gainedFocus = false;
+
                                 frameTimer = 0.0f;
                         }
                         frameTimer += fElapsedTime;
@@ -290,6 +341,9 @@ namespace PGEws
                 {
                         if (!wOnUserUpdate(fElapsedTime))
                                 destruct = true;
+
+                        lostFocus = false;
+                        gainedFocus = false;
                 }
 
                 pge->SetDrawTarget(nullptr);
@@ -536,18 +590,21 @@ namespace PGEws
                                 if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
 				{
 					resizingWindowRight = true;
+                                        windowList[focusIndex]->resizing = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
                                 else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
 				{
 					resizingWindowLeft = true;
+                                        windowList[focusIndex]->resizing = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY + scaledSizeY, win.posX + scaledSizeX + 8, win.posY + scaledSizeY + 8))
 				{
 					resizingWindowDown = true;
+                                        windowList[focusIndex]->resizing = true;
 					if (mouseX < win.posX + 12)
 						resizingWindowLeft = true;
 					else if (mouseX > win.posX + scaledSizeX - 12)
@@ -556,6 +613,7 @@ namespace PGEws
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight - 8, win.posX + scaledSizeX + 8, win.posY - win.bannerHeight))
                                 {
                                         resizingWindowUp = true;
+                                        windowList[focusIndex]->resizing = true;
                                         if(mouseX < win.posX + 12)
                                                 resizingWindowLeft = true;
                                         else if(mouseX > win.posX + scaledSizeX - 12)
@@ -573,6 +631,7 @@ namespace PGEws
 				resizingWindowDown = false;
 				resizingWindowRight = false;
                                 resizingWindowUp = false;
+                                windowList[focusIndex]->resizing = false;
 			}
 			int newSizeX;
 			int newSizeY;
@@ -638,8 +697,10 @@ namespace PGEws
 						{
 							int oldFocusIndex = focusIndex;
 							windowList[focusIndex]->inFocus = false;
+							windowList[focusIndex]->lostFocus = true;
 							focusIndex = *i;
 							windowList[*i]->inFocus = true;
+                                                        windowList[*i]->gainedFocus = true;
 
 							int value = *i;
 							orderedIndices.erase(i);

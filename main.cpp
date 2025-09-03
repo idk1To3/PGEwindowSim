@@ -28,8 +28,11 @@ public:
 
 	bool wOnUserUpdate(float fElapsedTime) override
 	{
-                if(!inFocus)
+                if(!isInFocus())
                         return true;
+
+                if(hasGainedFocus())
+                        std::cout << "Gained focus " << getName() << "\n";
                 
 		for (int x = 0; x < WindowWidth(); x++)
 			for (int y = 0; y < WindowHeight(); y++)
@@ -62,9 +65,12 @@ public:
 
                 Window* w = getWindow(left0);
 
-                olc::vi2d pos = (w != nullptr ? w->lGetMousePos() * w->scale : olc::vi2d{0,0});
+                olc::vi2d pos = (w != nullptr ? w->lGetMousePos() * w->getScale() : olc::vi2d{0,0});
 
                 pge->FillCircle(pos, 5, olc::GREEN);
+
+                if(hasGainedFocus())
+                        std::cout << "Gained focus " << getName() << "\n";
 
 		return true;
 	};
@@ -95,7 +101,7 @@ public:
 		pge->DrawString(20, 30, "1", olc::BLACK);
 		pge->DrawString(20, 50, "2", olc::BLACK);
 
-		if (!inFocus)
+		if (!isInFocus())
 			return true;
 
 		if (!pge->GetMouse(0).bPressed)
@@ -140,8 +146,8 @@ public:
 	bool OnUserCreate() override
 	{
 		win.addNewWindow(new LeftWindow(this,  left0, "Can do all", 20, 10, 0, 0));
-		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 0, PGEws::CanMove | PGEws::CanClose));
 		win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 0, ~(PGEws::CanMove)));
+		win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 0, PGEws::CanMove | PGEws::CanClose));
 		win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
 
 		win.setMaxFPS(left0, 1.0f);
