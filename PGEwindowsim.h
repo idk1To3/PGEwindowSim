@@ -290,8 +290,6 @@ namespace PGEws
                                 length++;
                         }
                 }
-
-                std::cout << nameMax << ": " << nameTrimmed << "|\n";
         }
 
 
@@ -565,6 +563,12 @@ namespace PGEws
 
 	void WindowList::changeFocused(std::list<int>::iterator indexIt)
 	{
+                if(focusIndex != *indexIt)
+                {
+                        windowList[focusIndex]->lostFocus = true;
+                        windowList[*indexIt]->gainedFocus = true;
+                }
+
 		windowList[focusIndex]->inFocus = false;
 		focusIndex = *indexIt;
 		windowList[focusIndex]->inFocus = true;
@@ -622,7 +626,7 @@ namespace PGEws
 			focusIndex--;
 	}
 
-	bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
+	inline bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
 	{
 		return (x >= rx0 && x <= rx1 && y >= ry0 && y <= ry1);
 	}
@@ -671,7 +675,7 @@ namespace PGEws
                                         if(mouseX < win.posX + 12)
                                                 resizingWindowLeft = true;
                                         else if(mouseX > win.posX + scaledSizeX - 12)
-                                                resizingWindowUp = true;
+                                                resizingWindowRight = true;
                                 }
 			}
 		}
@@ -735,7 +739,7 @@ namespace PGEws
 	{
 		if (!leftClickSelected)
 		{
-			if (pge->GetMouse(0).bPressed && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight)
+			if (pge->GetMouse(0).bPressed && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
 			{
 				int mousePosX = pge->GetMouseX();
 				int mousePosY = pge->GetMouseY();
@@ -751,12 +755,17 @@ namespace PGEws
 						{
 							int oldFocusIndex = focusIndex;
 							windowList[focusIndex]->inFocus = false;
-							windowList[focusIndex]->lostFocus = true;
 							focusIndex = *i;
 							windowList[*i]->inFocus = true;
-                                                        windowList[*i]->gainedFocus = true;
+
+                                                        if(focusIndex != oldFocusIndex)
+                                                        {
+                                                                windowList[oldFocusIndex]->lostFocus = true;
+                                                                windowList[focusIndex]->gainedFocus = true;
+                                                        }
 
 							int value = *i;
+
 							orderedIndices.erase(i);
 							orderedIndices.push_front(value);
 

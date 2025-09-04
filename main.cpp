@@ -179,25 +179,20 @@ public:
 
 		win.updateAll(fElapsedTime);
 
-//		int windowMenuIndex = win.getIndexOfId(menu);
-//		int whichWindowToFocus = ((WindowMenu*)win.windowList[windowMenuIndex])->shouldBeFocused;
-//		if (whichWindowToFocus != -1)
-//			win.changeFocusedWindow(whichWindowToFocus);
-//
-//		if (GetKey(olc::Key::A).bPressed)
-//			win.addNewWindow(new LeftWindow(this, id++, "added window", 50, 50, 400, 400));
-//
-//		if (GetKey(olc::Key::DEL).bPressed)
-//			win.deleteWindow(win.getFocusedId());
-//
-//		if (GetKey(olc::Key::F).bPressed)
-//			win.changeFocusedWindow(1);
-//
-//		if (GetKey(olc::Key::O).bPressed)
-//			win.setHidden(win.getFocusedId(), true);
-//
-//		if (GetKey(olc::Key::P).bPressed)
-//			win.setHidden(win.getFocusedId(), false);
+		if (GetKey(olc::Key::A).bPressed)
+			win.addNewWindow(new LeftWindow(this, id++, "added window", 50, 50, 400, 400));
+
+		if (GetKey(olc::Key::DEL).bPressed)
+			win.deleteWindow(win.getFocusedId());
+
+		if (GetKey(olc::Key::F).bPressed)
+			win.changeFocusedWindow(1);
+
+		if (GetKey(olc::Key::O).bPressed)
+			win.setHidden(win.getFocusedId(), true);
+
+		if (GetKey(olc::Key::P).bPressed)
+			win.setHidden(win.getFocusedId(), false);
 
 		return true;
 	}
