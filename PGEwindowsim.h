@@ -626,7 +626,7 @@ namespace PGEws
 			focusIndex--;
 	}
 
-	bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
+	inline bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
 	{
 		return (x >= rx0 && x <= rx1 && y >= ry0 && y <= ry1);
 	}
