@@ -46,6 +46,9 @@ namespace PGEws
                 bool lostFocus = false;
                 bool gainedFocus = false;
 
+                int bodyDraggingMouseType = 2;
+                //-1 - body dragging disabled, 0 - left click dragging, 1 - right click dragging, 2 - middle click dragging
+
                 bool resizing = false;
 
                 int nameMax = 0;
@@ -88,11 +91,10 @@ namespace PGEws
                 Window* getWindow(unsigned int id);
 
         private:
+                void trimName();
                 void drawBanner();
 
                 void drawBorder();
-
-                void trimName();
 
         public:
                 void lClear(olc::Pixel color);
@@ -137,10 +139,13 @@ namespace PGEws
 
                 bool leftClickSelected = false;
                 olc::vi2d selectionOffset;
+                int selectingMouseType = 0;
+
                 bool resizingWindowLeft = false;
                 bool resizingWindowDown = false;
                 bool resizingWindowRight = false;
                 bool resizingWindowUp = false;
+
                 int focusIndex = -1;
 
         public:
@@ -186,6 +191,8 @@ namespace PGEws
                 bool rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1);
 
                 void resizeWindow();
+
+                void updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving);
 
                 void moveWindows();
         };
@@ -755,12 +762,51 @@ namespace PGEws
 		}
 	}
 
+        void WindowList::updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving)
+        {
+                int scale = windowList[*index]->scale;
+
+                int oldFocusIndex = focusIndex;
+                windowList[focusIndex]->inFocus = false;
+                focusIndex = *index;
+                windowList[*index]->inFocus = true;
+
+                if(focusIndex != oldFocusIndex)
+                {
+                        windowList[oldFocusIndex]->lostFocus = true;
+                        windowList[focusIndex]->gainedFocus = true;
+                }
+
+                int value = *index;
+
+                orderedIndices.erase(index);
+                orderedIndices.push_front(value);
+
+//                if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
+                if(startMoving)
+                {
+                        if (!windowList[value]->canClose || mousePosX < windowList[value]->posX + windowList[value]->sizeX * scale - 9)
+                        {
+                                leftClickSelected = true;
+                                //make *i the focusIndex and make the previous focused window unfocused
+                                selectionOffset = { mousePosX - windowList[value]->posX, mousePosY - windowList[value]->posY };
+                        }
+                        else
+                        {
+                                windowList[value]->destruct = true;
+                                focusIndex = oldFocusIndex;
+                                windowList[focusIndex]->inFocus = true;
+                        }
+                }
+        }
+
 	void WindowList::moveWindows()
 	{
 		if (!leftClickSelected)
 		{
-			if (pge->GetMouse(0).bPressed && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
+			if (pge->AnyMousePressed() && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
 			{
+                                //std::cout << "Hi there\n";
 				int mousePosX = pge->GetMouseX();
 				int mousePosY = pge->GetMouseY();
 
@@ -768,51 +814,42 @@ namespace PGEws
 				{
 					if (windowList[*i]->hidden)
 						continue;
-					int scale = windowList[*i]->scale;
+                                        Window* w = windowList[*i];
 
-					if (mousePosY > windowList[*i]->posY - windowList[*i]->bannerHeight && mousePosY < windowList[*i]->posY + windowList[*i]->sizeY * scale)
-						if (mousePosX >= windowList[*i]->posX && mousePosX < windowList[*i]->posX + windowList[*i]->sizeX * scale)
-						{
-							int oldFocusIndex = focusIndex;
-							windowList[focusIndex]->inFocus = false;
-							focusIndex = *i;
-							windowList[*i]->inFocus = true;
+                                        bool dragging = false;
 
-                                                        if(focusIndex != oldFocusIndex)
-                                                        {
-                                                                windowList[oldFocusIndex]->lostFocus = true;
-                                                                windowList[focusIndex]->gainedFocus = true;
-                                                        }
+                                        if(!rectContainsPoint(mousePosX, mousePosY, 
+                                                              w->posX, w->posY - (w->hasBanner ? w->bannerHeight : 0) + 1, 
+                                                              w->posX + w->sizeX * w->scale, w->posY + w->sizeY * w->scale))
+                                                continue;
 
-							int value = *i;
+                                        //std::cout << "inside window " << w->name << "\n";
 
-							orderedIndices.erase(i);
-							orderedIndices.push_front(value);
+                                        if(windowList[*i]->bodyDraggingMouseType >= 0 && pge->GetMouse(windowList[*i]->bodyDraggingMouseType).bPressed) //body dragging
+                                        {
+                                                selectingMouseType = windowList[*i]->bodyDraggingMouseType;
+                                                dragging = true;
 
-							if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
-							{
-								if (!windowList[value]->canClose || mousePosX < windowList[value]->posX + windowList[value]->sizeX * scale - 9)
-								{
-									leftClickSelected = true;
-									//make *i the focusIndex and make the previous focused window unfocused
-									selectionOffset = { mousePosX - windowList[value]->posX, mousePosY - windowList[value]->posY };
-								}
-								else
-								{
-									windowList[value]->destruct = true;
-									focusIndex = oldFocusIndex;
-									windowList[focusIndex]->inFocus = true;
-								}
-							}
+                                                //std::cout << "body dragging\n";
+                                        }
+                                        else if(pge->GetMouse(0).bPressed && mousePosY < w->posY) //banner dragging
+                                        {
+                                                selectingMouseType = 0;
+                                                dragging = true;
 
-							break;
-						}
+                                                //std::cout << "banner dragging\n";
+                                        }
+
+                                        //std::cout << "Dragging\n";
+                                        updateOnClick(i, mousePosX, mousePosY, dragging);
+
+                                        break;
 				}
 			}
 		}
 		else
 		{
-			if (pge->GetMouse(0).bReleased)
+			if (pge->GetMouse(selectingMouseType).bReleased)
 			{
 				leftClickSelected = false;
 			}
