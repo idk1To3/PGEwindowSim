@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <stdexcept>
 
+//TODO figure out banner trimming
+
 namespace PGEws
 {
         class WindowList;
@@ -672,14 +674,15 @@ namespace PGEws
 				Window& win = *windowList[focusIndex];
 				int scaledSizeX = win.sizeX * win.scale;
 				int scaledSizeY = win.sizeY * win.scale;
-                                if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - win.bannerHeight, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
+                                int bh = (win.hasBanner ? win.bannerHeight : 0);
+                                if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - bh, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
 				{
 					resizingWindowRight = true;
                                         windowList[focusIndex]->resizing = true;
 					if (mouseY > win.posY + scaledSizeY - 12)
 						resizingWindowDown = true;
 				}
-                                else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight, win.posX-1, win.posY + scaledSizeY))
+                                else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh, win.posX-1, win.posY + scaledSizeY))
 				{
 					resizingWindowLeft = true;
                                         windowList[focusIndex]->resizing = true;
@@ -695,7 +698,7 @@ namespace PGEws
 					else if (mouseX > win.posX + scaledSizeX - 12)
 						resizingWindowRight = true;
 				}
-                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - win.bannerHeight - 8, win.posX + scaledSizeX + 8, win.posY - win.bannerHeight))
+                                else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh - 8, win.posX + scaledSizeX + 8, win.posY - bh))
                                 {
                                         resizingWindowUp = true;
                                         windowList[focusIndex]->resizing = true;
