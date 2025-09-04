@@ -159,8 +159,10 @@ public:
 		win.setScale(left0, 7);
 		win.setScale(menu, 1);
 
-//                win.setIfHasBanner(left0, false);
-                win.setBannerHeight(left0, 20);
+                win.setIfHasBanner(left0, false);
+//                win.setBannerHeight(left0, 20);
+
+                win.setRealPosition(left0, 0, 5);
 
 		return true;
 	}
@@ -168,6 +170,8 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		Clear(olc::BLACK);
+
+                DrawLine(0,0,0,4, olc::RED);
 
 //                for(int x = 0; x < ScreenWidth(); x++)
 //                        for(int y = 0; y < ScreenHeight(); y++)
