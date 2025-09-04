@@ -109,6 +109,8 @@ namespace PGEws
 
                 void setPosition(int x, int y);
 
+                void setRealPosition(int x, int y);
+
                 void setSize(int w, int h);
 
                 void setScale(unsigned int scale);
@@ -158,6 +160,8 @@ namespace PGEws
                 bool setSize(unsigned int id, int sizeX, int sizeY);
 
                 bool setPosition(unsigned int id, int posX, int posY);
+
+                bool setRealPosition(unsigned int id, int posX, int posY);
 
                 bool setScale(unsigned int id, int scale);
 
@@ -317,6 +321,8 @@ namespace PGEws
         void Window::setIfHasBanner(bool value) { hasBanner = value; };
 
         void Window::setPosition(int x, int y) { posX = x; posY = y; }
+
+        void Window::setRealPosition(int x, int y) { posX = x+1; posY = (hasBanner ? y + bannerHeight : y + 1); }
 
         void Window::setSize(int w, int h)
         {
@@ -489,6 +495,16 @@ namespace PGEws
 		return true;
 	}
 
+	bool WindowList::setRealPosition(unsigned int id, int posX, int posY)
+	{
+		int i = getIndexOfId(id);
+		if (i == -1) return false;
+
+		windowList[i]->setRealPosition(posX, posY);
+
+		return true;
+	}
+
 	bool WindowList::setScale(unsigned int id, int scale)
 	{
 		int i = getIndexOfId(id);
@@ -550,7 +566,11 @@ namespace PGEws
                 int i = getIndexOfId(id);
                 if(i == -1) return false;
 
+                int realPosY = windowList[i]->posY - windowList[i]->bannerHeight;
+
                 windowList[i]->bannerHeight = value;
+
+                windowList[i]->posY = realPosY + value;
 
                 return true;
         }
@@ -769,7 +789,7 @@ namespace PGEws
 							orderedIndices.erase(i);
 							orderedIndices.push_front(value);
 
-							if (mousePosY < windowList[value]->posY)
+							if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
 							{
 								if (!windowList[value]->canClose || mousePosX < windowList[value]->posX + windowList[value]->sizeX * scale - 9)
 								{
