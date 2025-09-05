@@ -778,14 +778,20 @@ namespace PGEws
                                 newSizeX = windowList[focusIndex]->sizeX * scale;
                         }
 
+                        bool Xclamped = false; //Ensures the window is always wide enough for the X button
                         if (newSizeX < 11)
                         {
-                                if(windowList[focusIndex]->canClose)
+                                if(windowList[focusIndex]->canClose && windowList[focusIndex]->hasBanner)
+                                {
+                                        Xclamped = true;
                                         newSizeX = (10/scale + 1)*scale;
-                                else if(newSizeX < 1)
-                                        newSizeX = scale;
+                                }
                         }
-                        if (newSizeY < 1)
+                        if (newSizeX <= scale && !Xclamped)
+                        {
+                                newSizeX = scale;
+                        }
+                        if (newSizeY <= scale)
                                 newSizeY = scale;
                         windowList[focusIndex]->setSize(newSizeX/scale, newSizeY/scale);
                 }
