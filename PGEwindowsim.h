@@ -3,8 +3,6 @@
 #include <unordered_map>
 #include <stdexcept>
 
-//TODO figure out banner trimming
-
 namespace PGEws
 {
         class WindowList;
@@ -93,6 +91,7 @@ namespace PGEws
                 Window* getWindow(unsigned int id);
 
         private:
+                void updateNameMax();
                 void trimName();
                 void drawBanner();
 
@@ -210,7 +209,7 @@ namespace PGEws
 
                 sizeX = width;
                 sizeY = height;
-                nameMax = (sizeX - (canClose ? 18 : 2)) / 8;
+                updateNameMax();
                 trimName();
                 content = std::make_shared<olc::Sprite>(width, height);
         };
@@ -259,6 +258,32 @@ namespace PGEws
         }
 
 
+        inline void Window::updateNameMax()
+        {
+                nameMax = (sizeX*scale - (canClose ? 14 : 2)) / 8;
+        }
+
+        void Window::trimName()
+        {
+                nameTrimmed.clear();
+
+                int length = 0;
+
+                for(const auto& c : name)
+                {
+                        if(c == '\n')
+                        {
+                                length = 0;
+                                nameTrimmed += "\n";
+                        }
+                        else if(length < nameMax)
+                        {
+                                nameTrimmed += c;
+                                length++;
+                        }
+                }
+        }
+
         void Window::drawBanner()
         {
                 if (!hasBanner)
@@ -282,27 +307,6 @@ namespace PGEws
         void Window::drawBorder()
         {
                 pge->DrawRect(posX - 1, posY - 1, sizeX*scale + 1, sizeY*scale + 1, (inFocus ? olc::Pixel(110,110,110) : olc::Pixel(50, 50, 50)));
-        }
-
-        void Window::trimName()
-        {
-                nameTrimmed.clear();
-
-                int length = 0;
-
-                for(const auto& c : name)
-                {
-                        if(c == '\n')
-                        {
-                                length = 0;
-                                nameTrimmed += "\n";
-                        }
-                        else if(length < nameMax)
-                        {
-                                nameTrimmed += c;
-                                length++;
-                        }
-                }
         }
 
 
@@ -336,7 +340,7 @@ namespace PGEws
         void Window::setSize(int w, int h)
         {
                 sizeX = w; sizeY = h;
-                nameMax = (sizeX*scale - (canClose ? 18 : 2)) / 8;
+                updateNameMax();
                 trimName();
 
                 std::shared_ptr<olc::Sprite> newContent = std::make_shared<olc::Sprite>(sizeX, sizeY);
@@ -348,7 +352,7 @@ namespace PGEws
         void Window::setScale(unsigned int scale)
         {
                 this->scale = scale;
-                nameMax = (sizeX*scale - (canClose ? 18 : 2)) / 8;
+                updateNameMax();
                 trimName();
         }
 
