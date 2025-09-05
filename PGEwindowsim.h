@@ -180,6 +180,8 @@ namespace PGEws
 
                         bool setHidden(unsigned int id, bool value);
 
+                        bool toggleHidden(unsigned int id);
+
                         bool setBodyDraggingType(unsigned int id, int value);
 
                         bool setIfHasBanner(unsigned int id, bool value);
@@ -200,7 +202,7 @@ namespace PGEws
 
                         void resizeWindow();
 
-                        void updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving);
+                        void updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving, bool closingClick);
 
                         void moveWindows();
         };
@@ -586,6 +588,26 @@ namespace PGEws
                 return false;
         }
 
+        bool WindowList::toggleHidden(unsigned int id)
+        {
+                for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
+                {
+                        if (windowList[*i]->id == id)
+                        {
+                                bool value = !windowList[*i]->hidden;
+                                windowList[*i]->setHidden(value);
+
+                                if (value == false)
+                                {
+                                        changeFocused(i);
+                                }
+
+                                return true;
+                        }
+                }
+                return false;
+        }
+
         bool WindowList::setIfHasBanner(unsigned int id, bool value)
         {
                 int i = getIndexOfId(id);
@@ -698,6 +720,8 @@ namespace PGEws
                                 int mouseX = pge->GetMouseX();
                                 int mouseY = pge->GetMouseY();
                                 Window& win = *windowList[focusIndex];
+                                if(win.hidden)
+                                        return;
                                 int scaledSizeX = win.sizeX * win.scale;
                                 int scaledSizeY = win.sizeY * win.scale;
                                 int bh = (win.hasBanner ? win.bannerHeight : 0);
@@ -797,7 +821,7 @@ namespace PGEws
                 }
         }
 
-        void WindowList::updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving)
+        void WindowList::updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving, bool closingClick)
         {
                 int scale = windowList[*index]->scale;
 
@@ -820,17 +844,17 @@ namespace PGEws
                 //                if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
                 if(startMoving)
                 {
-                        if (!windowList[value]->canClose || mousePosX < windowList[value]->posX + windowList[value]->sizeX * scale - 9)
-                        {
-                                leftClickSelected = true;
-                                //make *i the focusIndex and make the previous focused window unfocused
-                                selectionOffset = { mousePosX - windowList[value]->posX, mousePosY - windowList[value]->posY };
-                        }
-                        else
+                        if (closingClick && windowList[value]->canClose && mousePosX >= windowList[value]->posX + windowList[value]->sizeX * scale - 9)
                         {
                                 windowList[value]->destruct = true;
                                 focusIndex = oldFocusIndex;
                                 windowList[focusIndex]->inFocus = true;
+                        }
+                        else
+                        {
+                                leftClickSelected = true;
+                                //make *i the focusIndex and make the previous focused window unfocused
+                                selectionOffset = { mousePosX - windowList[value]->posX, mousePosY - windowList[value]->posY };
                         }
                 }
         }
@@ -852,6 +876,7 @@ namespace PGEws
                                         Window* w = windowList[*i];
 
                                         bool dragging = false;
+                                        bool closingClick = false;
 
                                         if(!rectContainsPoint(mousePosX, mousePosY, 
                                                                 w->posX, w->posY - (w->hasBanner ? w->bannerHeight : 0) + 1, 
@@ -871,12 +896,13 @@ namespace PGEws
                                         {
                                                 selectingMouseType = 0;
                                                 dragging = true;
+                                                closingClick = true;
 
                                                 //std::cout << "banner dragging\n";
                                         }
 
                                         //std::cout << "Dragging\n";
-                                        updateOnClick(i, mousePosX, mousePosY, dragging);
+                                        updateOnClick(i, mousePosX, mousePosY, dragging, closingClick);
 
                                         break;
                                 }

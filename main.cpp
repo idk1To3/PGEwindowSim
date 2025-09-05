@@ -200,6 +200,9 @@ class Application : public olc::PixelGameEngine
                         if (GetKey(olc::Key::P).bPressed)
                                 win.setHidden(win.getFocusedId(), false);
 
+                        if(GetKey(olc::Key::I).bPressed)
+                                win.toggleHidden(win.getFocusedId());
+
                         return true;
                 }
 
