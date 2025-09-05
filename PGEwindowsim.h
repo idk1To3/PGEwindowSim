@@ -7,28 +7,28 @@ namespace PGEws
 {
         class WindowList;
 
-	enum permission
-	{
-		CanClose = 1,
-		CanMove = 2,
-		CanResizeX = 4,
-		CanResizeY = 8,
-	};
+        enum permission
+        {
+                CanClose = 1,
+                CanMove = 2,
+                CanResizeX = 4,
+                CanResizeY = 8,
+        };
 
         class Window
         {
                 friend class WindowList;
 
-        public:
+                public:
                 Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1);
 
-        public:
+                public:
                 olc::PixelGameEngine* const pge;
                 WindowList* parentWindowList;
 
                 unsigned int const id;
 
-        public:
+                public:
                 bool hidden = false;
 
                 bool hasBanner = true;
@@ -39,7 +39,7 @@ namespace PGEws
                 bool canResizeX = true;
                 bool canResizeY = true;
 
-        private:
+                private:
                 std::shared_ptr<olc::Sprite> content;
 
                 bool inFocus = false;
@@ -67,7 +67,7 @@ namespace PGEws
 
                 bool destruct = false;
 
-        public:
+                public:
                 olc::vi2d lGetMousePos();
                 int lGetMouseX();
                 int lGetMouseY();
@@ -90,14 +90,14 @@ namespace PGEws
 
                 Window* getWindow(unsigned int id);
 
-        private:
+                private:
                 void updateNameMax();
                 void trimName();
                 void drawBanner();
 
                 void drawBorder();
 
-        public:
+                public:
                 void lClear(olc::Pixel color);
 
 
@@ -134,75 +134,75 @@ namespace PGEws
 
         class WindowList
         {
-        public:
-                WindowList(olc::PixelGameEngine* pge);
-                olc::PixelGameEngine* pge;
+                public:
+                        WindowList(olc::PixelGameEngine* pge);
+                        olc::PixelGameEngine* pge;
 
-                std::vector<Window*> windowList;
+                        std::vector<Window*> windowList;
 
-        private:
-                std::list<int> orderedIndices;
+                private:
+                        std::list<int> orderedIndices;
 
-                bool leftClickSelected = false;
-                olc::vi2d selectionOffset;
-                int selectingMouseType = 0;
+                        bool leftClickSelected = false;
+                        olc::vi2d selectionOffset;
+                        int selectingMouseType = 0;
 
-                bool resizingWindowLeft = false;
-                bool resizingWindowDown = false;
-                bool resizingWindowRight = false;
-                bool resizingWindowUp = false;
+                        bool resizingWindowLeft = false;
+                        bool resizingWindowDown = false;
+                        bool resizingWindowRight = false;
+                        bool resizingWindowUp = false;
 
-                int focusIndex = -1;
+                        int focusIndex = -1;
 
-        public:
-                int getFocusedId();
+                public:
+                        int getFocusedId();
 
-                int getIndexOfId(unsigned int id);
-                        
-        public:
-                void updateAll(float fElapsedTime);
+                        int getIndexOfId(unsigned int id);
 
-                void addNewWindow(Window* window);
+                public:
+                        void updateAll(float fElapsedTime);
 
-                bool deleteWindow(unsigned int id, bool callWOnUserDestroy = true);
+                        void addNewWindow(Window* window);
 
-                bool changeFocusedWindow(unsigned int id);
+                        bool deleteWindow(unsigned int id, bool callWOnUserDestroy = true);
 
-                bool setSize(unsigned int id, int sizeX, int sizeY);
+                        bool changeFocusedWindow(unsigned int id);
 
-                bool setPosition(unsigned int id, int posX, int posY);
+                        bool setSize(unsigned int id, int sizeX, int sizeY);
 
-                bool setRealPosition(unsigned int id, int posX, int posY);
+                        bool setPosition(unsigned int id, int posX, int posY);
 
-                bool setScale(unsigned int id, int scale);
+                        bool setRealPosition(unsigned int id, int posX, int posY);
 
-                bool setMaxFPS(unsigned int id, float fps);
+                        bool setScale(unsigned int id, int scale);
 
-                bool setHidden(unsigned int id, bool value);
+                        bool setMaxFPS(unsigned int id, float fps);
 
-                bool setBodyDraggingType(unsigned int id, int value);
+                        bool setHidden(unsigned int id, bool value);
 
-                bool setIfHasBanner(unsigned int id, bool value);
+                        bool setBodyDraggingType(unsigned int id, int value);
 
-                bool setBannerHeight(unsigned int id, int value);
+                        bool setIfHasBanner(unsigned int id, bool value);
 
-                void destroyAll();
+                        bool setBannerHeight(unsigned int id, int value);
 
-        private:
-                void changeFocused(std::list<int>::iterator indexIt);
+                        void destroyAll();
 
-                void addWindowAndUpdate(Window* window);
+                private:
+                        void changeFocused(std::list<int>::iterator indexIt);
 
-                void deleteWindowAndUpdate(std::list<int>::iterator indexIt);
+                        void addWindowAndUpdate(Window* window);
 
-        private:
-                bool rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1);
+                        void deleteWindowAndUpdate(std::list<int>::iterator indexIt);
 
-                void resizeWindow();
+                private:
+                        bool rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1);
 
-                void updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving);
+                        void resizeWindow();
 
-                void moveWindows();
+                        void updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving);
+
+                        void moveWindows();
         };
 
 #ifdef PGEWS_APPLICATION
@@ -422,169 +422,169 @@ namespace PGEws
 
         WindowList::WindowList(olc::PixelGameEngine* pge) : pge(pge) { }
 
-	int WindowList::getFocusedId()
-	{
-		if (focusIndex == -1)
-			return -1;
-		return windowList[focusIndex]->id;
-	}
+        int WindowList::getFocusedId()
+        {
+                if (focusIndex == -1)
+                        return -1;
+                return windowList[focusIndex]->id;
+        }
 
-	int WindowList::getIndexOfId(unsigned int id)
-	{
-		for (int i = 0; i < windowList.size(); i++)
-			if (windowList[i]->id == id)
-				return i;
+        int WindowList::getIndexOfId(unsigned int id)
+        {
+                for (int i = 0; i < windowList.size(); i++)
+                        if (windowList[i]->id == id)
+                                return i;
 
-		return -1;
-	}
+                return -1;
+        }
 
-	void WindowList::updateAll(float fElapsedTime)
-	{
-		resizeWindow();
+        void WindowList::updateAll(float fElapsedTime)
+        {
+                resizeWindow();
 
-		moveWindows();
+                moveWindows();
 
-		for (auto i = orderedIndices.rbegin(); i != orderedIndices.rend(); i++)
-			windowList[*i]->update(fElapsedTime);
+                for (auto i = orderedIndices.rbegin(); i != orderedIndices.rend(); i++)
+                        windowList[*i]->update(fElapsedTime);
 
-		for (auto i = orderedIndices.begin(); i != orderedIndices.end(); ++i)
-		{
-			if (windowList[*i]->destruct)
-			{
-				windowList[*i]->wOnUserDestroy();
+                for (auto i = orderedIndices.begin(); i != orderedIndices.end(); ++i)
+                {
+                        if (windowList[*i]->destruct)
+                        {
+                                windowList[*i]->wOnUserDestroy();
 
-				deleteWindowAndUpdate(i);
+                                deleteWindowAndUpdate(i);
 
-				break;
-			}
-		}
-	}
+                                break;
+                        }
+                }
+        }
 
-	void WindowList::addNewWindow(Window* window)
-	{
-		try 
-		{
-			addWindowAndUpdate(window);
-		}
-		catch (const std::invalid_argument& error) 
-		{
-			std::cerr << "Error: " << error.what() << "\n";
+        void WindowList::addNewWindow(Window* window)
+        {
+                try 
+                {
+                        addWindowAndUpdate(window);
+                }
+                catch (const std::invalid_argument& error) 
+                {
+                        std::cerr << "Error: " << error.what() << "\n";
 
-			delete window;
-		}
-	}
+                        delete window;
+                }
+        }
 
-	bool WindowList::deleteWindow(unsigned int id, bool callWOnUserDestroy)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::deleteWindow(unsigned int id, bool callWOnUserDestroy)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		if(callWOnUserDestroy)
-			windowList[i]->wOnUserDestroy();
+                if(callWOnUserDestroy)
+                        windowList[i]->wOnUserDestroy();
 
-		return true;
-	}
+                return true;
+        }
 
-	bool WindowList::changeFocusedWindow(unsigned int id)
-	{
-		for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
-		{
-			if (windowList[*i]->id == id)
-			{
-				changeFocused(i);
+        bool WindowList::changeFocusedWindow(unsigned int id)
+        {
+                for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
+                {
+                        if (windowList[*i]->id == id)
+                        {
+                                changeFocused(i);
 
-				return true;
-			}
-		}
+                                return true;
+                        }
+                }
 
-		return false;
-	}
+                return false;
+        }
 
-	bool WindowList::setSize(unsigned int id, int sizeX, int sizeY)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::setSize(unsigned int id, int sizeX, int sizeY)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		windowList[i]->setSize(sizeX, sizeY);
+                windowList[i]->setSize(sizeX, sizeY);
 
-		return true;
-	}
+                return true;
+        }
 
-	bool WindowList::setPosition(unsigned int id, int posX, int posY)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::setPosition(unsigned int id, int posX, int posY)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		windowList[i]->setPosition(posX, posY);
+                windowList[i]->setPosition(posX, posY);
 
-		return true;
-	}
+                return true;
+        }
 
-	bool WindowList::setRealPosition(unsigned int id, int posX, int posY)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::setRealPosition(unsigned int id, int posX, int posY)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		windowList[i]->setRealPosition(posX, posY);
+                windowList[i]->setRealPosition(posX, posY);
 
-		return true;
-	}
+                return true;
+        }
 
-	bool WindowList::setScale(unsigned int id, int scale)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::setScale(unsigned int id, int scale)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		windowList[i]->setScale(scale);
+                windowList[i]->setScale(scale);
 
-		return true;
-	}
+                return true;
+        }
 
-	bool WindowList::setMaxFPS(unsigned int id, float fps)
-	{
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+        bool WindowList::setMaxFPS(unsigned int id, float fps)
+        {
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
-		if (fps <= 0.0f)
-		{
-			windowList[i]->setMaxFps(false);
-		}
-		else
-		{
-			windowList[i]->setMaxFps(true, fps);
-		}
+                if (fps <= 0.0f)
+                {
+                        windowList[i]->setMaxFps(false);
+                }
+                else
+                {
+                        windowList[i]->setMaxFps(true, fps);
+                }
 
-		return true;
-	}
+                return true;
+        }
 
         bool WindowList::setBodyDraggingType(unsigned int id, int value)
         {
-		int i = getIndexOfId(id);
-		if (i == -1) return false;
+                int i = getIndexOfId(id);
+                if (i == -1) return false;
 
                 windowList[i]->setBodyDraggingType(value);
 
                 return true;
         }
 
-	bool WindowList::setHidden(unsigned int id, bool value)
-	{
-		for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
-		{
-			if (windowList[*i]->id == id)
-			{
-				windowList[*i]->setHidden(value);
+        bool WindowList::setHidden(unsigned int id, bool value)
+        {
+                for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
+                {
+                        if (windowList[*i]->id == id)
+                        {
+                                windowList[*i]->setHidden(value);
 
-				if (value == false)
-				{
-					changeFocused(i);
-				}
-				
-				return true;
-			}
-		}
-		return false;
-	}
+                                if (value == false)
+                                {
+                                        changeFocused(i);
+                                }
+
+                                return true;
+                        }
+                }
+                return false;
+        }
 
         bool WindowList::setIfHasBanner(unsigned int id, bool value)
         {
@@ -610,120 +610,120 @@ namespace PGEws
                 return true;
         }
 
-	void WindowList::destroyAll()
-	{
-		for (int i = 0; i < windowList.size(); i++)
-			delete windowList[i];
-	}
+        void WindowList::destroyAll()
+        {
+                for (int i = 0; i < windowList.size(); i++)
+                        delete windowList[i];
+        }
 
-	void WindowList::changeFocused(std::list<int>::iterator indexIt)
-	{
+        void WindowList::changeFocused(std::list<int>::iterator indexIt)
+        {
                 if(focusIndex != *indexIt)
                 {
                         windowList[focusIndex]->lostFocus = true;
                         windowList[*indexIt]->gainedFocus = true;
                 }
 
-		windowList[focusIndex]->inFocus = false;
-		focusIndex = *indexIt;
-		windowList[focusIndex]->inFocus = true;
+                windowList[focusIndex]->inFocus = false;
+                focusIndex = *indexIt;
+                windowList[focusIndex]->inFocus = true;
 
-		int value = *indexIt;
-		orderedIndices.erase(indexIt);
-		orderedIndices.push_front(value);
-	}
+                int value = *indexIt;
+                orderedIndices.erase(indexIt);
+                orderedIndices.push_front(value);
+        }
 
-	void WindowList::addWindowAndUpdate(Window* window)
-	{
-		int idGiven = window->id;
-		for (const auto& w : windowList)
-		{
-			if (w->id == idGiven)
-			{
-				throw std::invalid_argument("non-unique id " + std::to_string(idGiven) + " given to window \"" + window->name + "\".");
-			}
-		}
+        void WindowList::addWindowAndUpdate(Window* window)
+        {
+                int idGiven = window->id;
+                for (const auto& w : windowList)
+                {
+                        if (w->id == idGiven)
+                        {
+                                throw std::invalid_argument("non-unique id " + std::to_string(idGiven) + " given to window \"" + window->name + "\".");
+                        }
+                }
 
-		windowList.push_back(window);
-		orderedIndices.push_back(windowList.size() - 1);
+                windowList.push_back(window);
+                orderedIndices.push_back(windowList.size() - 1);
 
-		if (focusIndex == -1)
-		{
-			focusIndex = 0;
-			windowList[0]->inFocus = true;
-		}
+                if (focusIndex == -1)
+                {
+                        focusIndex = 0;
+                        windowList[0]->inFocus = true;
+                }
 
                 window->parentWindowList = this;
 
-		pge->SetDrawTarget(windowList.back()->content.get());
-		if (!windowList.back()->wOnUserCreate())
-			windowList.back()->destruct = true;
+                pge->SetDrawTarget(windowList.back()->content.get());
+                if (!windowList.back()->wOnUserCreate())
+                        windowList.back()->destruct = true;
                 pge->SetDrawTarget(nullptr);
-	}
+        }
 
-	void WindowList::deleteWindowAndUpdate(std::list<int>::iterator indexIt)
-	{
-		int value = *indexIt;
-		bool wasInFocus = windowList[value]->inFocus;
-		delete windowList[value];
-		windowList.erase(windowList.begin() + value);
-		orderedIndices.erase(indexIt);
+        void WindowList::deleteWindowAndUpdate(std::list<int>::iterator indexIt)
+        {
+                int value = *indexIt;
+                bool wasInFocus = windowList[value]->inFocus;
+                delete windowList[value];
+                windowList.erase(windowList.begin() + value);
+                orderedIndices.erase(indexIt);
 
-		for (auto& oi : orderedIndices)
-			if (oi > value)
-				oi--;
-		if (wasInFocus)
-		{
-			windowList[orderedIndices.front()]->inFocus = true;
-			focusIndex = orderedIndices.front();
-		}
-		if (focusIndex > value)
-			focusIndex--;
-	}
+                for (auto& oi : orderedIndices)
+                        if (oi > value)
+                                oi--;
+                if (wasInFocus)
+                {
+                        windowList[orderedIndices.front()]->inFocus = true;
+                        focusIndex = orderedIndices.front();
+                }
+                if (focusIndex > value)
+                        focusIndex--;
+        }
 
-	inline bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
-	{
-		return (x >= rx0 && x <= rx1 && y >= ry0 && y <= ry1);
-	}
+        inline bool WindowList::rectContainsPoint(int x, int y, int rx0, int ry0, int rx1, int ry1)
+        {
+                return (x >= rx0 && x <= rx1 && y >= ry0 && y <= ry1);
+        }
 
-	void WindowList::resizeWindow()
-	{
-		if (!windowList[focusIndex]->canResizeX && !windowList[focusIndex]->canResizeY)
-			return;
-		
-		if (!(resizingWindowLeft || resizingWindowDown || resizingWindowRight || resizingWindowUp))
-		{
-			if (pge->GetMouse(0).bPressed)
-			{
-				int mouseX = pge->GetMouseX();
-				int mouseY = pge->GetMouseY();
-				Window& win = *windowList[focusIndex];
-				int scaledSizeX = win.sizeX * win.scale;
-				int scaledSizeY = win.sizeY * win.scale;
+        void WindowList::resizeWindow()
+        {
+                if (!windowList[focusIndex]->canResizeX && !windowList[focusIndex]->canResizeY)
+                        return;
+
+                if (!(resizingWindowLeft || resizingWindowDown || resizingWindowRight || resizingWindowUp))
+                {
+                        if (pge->GetMouse(0).bPressed)
+                        {
+                                int mouseX = pge->GetMouseX();
+                                int mouseY = pge->GetMouseY();
+                                Window& win = *windowList[focusIndex];
+                                int scaledSizeX = win.sizeX * win.scale;
+                                int scaledSizeY = win.sizeY * win.scale;
                                 int bh = (win.hasBanner ? win.bannerHeight : 0);
                                 if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - bh, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
-				{
-					resizingWindowRight = true;
+                                {
+                                        resizingWindowRight = true;
                                         windowList[focusIndex]->resizing = true;
-					if (mouseY > win.posY + scaledSizeY - 12)
-						resizingWindowDown = true;
-				}
+                                        if (mouseY > win.posY + scaledSizeY - 12)
+                                                resizingWindowDown = true;
+                                }
                                 else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh, win.posX-1, win.posY + scaledSizeY))
-				{
-					resizingWindowLeft = true;
+                                {
+                                        resizingWindowLeft = true;
                                         windowList[focusIndex]->resizing = true;
-					if (mouseY > win.posY + scaledSizeY - 12)
-						resizingWindowDown = true;
-				}
+                                        if (mouseY > win.posY + scaledSizeY - 12)
+                                                resizingWindowDown = true;
+                                }
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY + scaledSizeY, win.posX + scaledSizeX + 8, win.posY + scaledSizeY + 8))
-				{
-					resizingWindowDown = true;
+                                {
+                                        resizingWindowDown = true;
                                         windowList[focusIndex]->resizing = true;
-					if (mouseX < win.posX + 12)
-						resizingWindowLeft = true;
-					else if (mouseX > win.posX + scaledSizeX - 12)
-						resizingWindowRight = true;
-				}
+                                        if (mouseX < win.posX + 12)
+                                                resizingWindowLeft = true;
+                                        else if (mouseX > win.posX + scaledSizeX - 12)
+                                                resizingWindowRight = true;
+                                }
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh - 8, win.posX + scaledSizeX + 8, win.posY - bh))
                                 {
                                         resizingWindowUp = true;
@@ -733,50 +733,50 @@ namespace PGEws
                                         else if(mouseX > win.posX + scaledSizeX - 12)
                                                 resizingWindowRight = true;
                                 }
-			}
-		}
-		else
-		{
-			int scale = windowList[focusIndex]->scale;
+                        }
+                }
+                else
+                {
+                        int scale = windowList[focusIndex]->scale;
                         int bannerHeight = windowList[focusIndex]->bannerHeight;
-			if (pge->GetMouse(0).bReleased)
-			{
-				resizingWindowLeft = false;
-				resizingWindowDown = false;
-				resizingWindowRight = false;
+                        if (pge->GetMouse(0).bReleased)
+                        {
+                                resizingWindowLeft = false;
+                                resizingWindowDown = false;
+                                resizingWindowRight = false;
                                 resizingWindowUp = false;
                                 windowList[focusIndex]->resizing = false;
-			}
-			int newSizeX;
-			int newSizeY;
+                        }
+                        int newSizeX;
+                        int newSizeY;
 
                         if (resizingWindowDown && windowList[focusIndex]->canResizeY)
                         {
-				newSizeY = pge->GetMouseY() - windowList[focusIndex]->posY;
+                                newSizeY = pge->GetMouseY() - windowList[focusIndex]->posY;
                         }
                         else if(resizingWindowUp && windowList[focusIndex]->canResizeY)
                         {
-				newSizeY = windowList[focusIndex]->sizeY * scale + windowList[focusIndex]->posY - ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale + 1;
-				windowList[focusIndex]->posY = ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale - 1;
+                                newSizeY = windowList[focusIndex]->sizeY * scale + windowList[focusIndex]->posY - ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale + 1;
+                                windowList[focusIndex]->posY = ((pge->GetMouseY()+bannerHeight)/scale + 1)*scale - 1;
                         }
                         else
                         {
-				newSizeY = windowList[focusIndex]->sizeY * scale;
+                                newSizeY = windowList[focusIndex]->sizeY * scale;
                         }
 
-			if (resizingWindowRight && windowList[focusIndex]->canResizeX)
-			{
-				newSizeX = pge->GetMouseX() - windowList[focusIndex]->posX;
-			}
-			else if(resizingWindowLeft && windowList[focusIndex]->canResizeX)
-			{
-				newSizeX = windowList[focusIndex]->sizeX * scale + windowList[focusIndex]->posX - (pge->GetMouseX()/scale + 1)*scale;
-				windowList[focusIndex]->posX = (pge->GetMouseX()/scale + 1)*scale;
-			}
-			else
-			{
-				newSizeX = windowList[focusIndex]->sizeX * scale;
-			}
+                        if (resizingWindowRight && windowList[focusIndex]->canResizeX)
+                        {
+                                newSizeX = pge->GetMouseX() - windowList[focusIndex]->posX;
+                        }
+                        else if(resizingWindowLeft && windowList[focusIndex]->canResizeX)
+                        {
+                                newSizeX = windowList[focusIndex]->sizeX * scale + windowList[focusIndex]->posX - (pge->GetMouseX()/scale + 1)*scale;
+                                windowList[focusIndex]->posX = (pge->GetMouseX()/scale + 1)*scale;
+                        }
+                        else
+                        {
+                                newSizeX = windowList[focusIndex]->sizeX * scale;
+                        }
 
                         if (newSizeX < 11)
                         {
@@ -785,11 +785,11 @@ namespace PGEws
                                 else if(newSizeX < 1)
                                         newSizeX = scale;
                         }
-			if (newSizeY < 1)
-				newSizeY = scale;
-			windowList[focusIndex]->setSize(newSizeX/scale, newSizeY/scale);
-		}
-	}
+                        if (newSizeY < 1)
+                                newSizeY = scale;
+                        windowList[focusIndex]->setSize(newSizeX/scale, newSizeY/scale);
+                }
+        }
 
         void WindowList::updateOnClick(std::list<int>::iterator index, int mousePosX, int mousePosY, bool startMoving)
         {
@@ -811,7 +811,7 @@ namespace PGEws
                 orderedIndices.erase(index);
                 orderedIndices.push_front(value);
 
-//                if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
+                //                if (mousePosY < windowList[value]->posY && windowList[value]->hasBanner)
                 if(startMoving)
                 {
                         if (!windowList[value]->canClose || mousePosX < windowList[value]->posX + windowList[value]->sizeX * scale - 9)
@@ -829,27 +829,27 @@ namespace PGEws
                 }
         }
 
-	void WindowList::moveWindows()
-	{
-		if (!leftClickSelected)
-		{
-			if (pge->AnyMousePressed() && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
-			{
+        void WindowList::moveWindows()
+        {
+                if (!leftClickSelected)
+                {
+                        if (pge->AnyMousePressed() && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
+                        {
                                 //std::cout << "Hi there\n";
-				int mousePosX = pge->GetMouseX();
-				int mousePosY = pge->GetMouseY();
+                                int mousePosX = pge->GetMouseX();
+                                int mousePosY = pge->GetMouseY();
 
-				for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
-				{
-					if (windowList[*i]->hidden)
-						continue;
+                                for (auto i = orderedIndices.begin(); i != orderedIndices.end(); i++)
+                                {
+                                        if (windowList[*i]->hidden)
+                                                continue;
                                         Window* w = windowList[*i];
 
                                         bool dragging = false;
 
                                         if(!rectContainsPoint(mousePosX, mousePosY, 
-                                                              w->posX, w->posY - (w->hasBanner ? w->bannerHeight : 0) + 1, 
-                                                              w->posX + w->sizeX * w->scale, w->posY + w->sizeY * w->scale))
+                                                                w->posX, w->posY - (w->hasBanner ? w->bannerHeight : 0) + 1, 
+                                                                w->posX + w->sizeX * w->scale, w->posY + w->sizeY * w->scale))
                                                 continue;
 
                                         //std::cout << "inside window " << w->name << "\n";
@@ -873,22 +873,22 @@ namespace PGEws
                                         updateOnClick(i, mousePosX, mousePosY, dragging);
 
                                         break;
-				}
-			}
-		}
-		else
-		{
-			if (pge->GetMouse(selectingMouseType).bReleased)
-			{
-				leftClickSelected = false;
-			}
-			else if (windowList[focusIndex]->canMove)
-			{
-				windowList[focusIndex]->posX = pge->GetMouseX() - selectionOffset.x;
-				windowList[focusIndex]->posY = pge->GetMouseY() - selectionOffset.y;
-			}
-		}
-	}
+                                }
+                        }
+                }
+                else
+                {
+                        if (pge->GetMouse(selectingMouseType).bReleased)
+                        {
+                                leftClickSelected = false;
+                        }
+                        else if (windowList[focusIndex]->canMove)
+                        {
+                                windowList[focusIndex]->posX = pge->GetMouseX() - selectionOffset.x;
+                                windowList[focusIndex]->posY = pge->GetMouseY() - selectionOffset.y;
+                        }
+                }
+        }
 
 #endif
 };
