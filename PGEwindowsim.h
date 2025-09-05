@@ -100,11 +100,15 @@ namespace PGEws
         public:
                 void lClear(olc::Pixel color);
 
+
                 void changePermissions(int flags);
+
 
                 void setMaxFps(bool value, float fps = 50.0f);
 
                 void setHidden(bool value);
+
+                void setBodyDraggingType(int value);
 
                 void setIfHasBanner(bool value);
 
@@ -117,6 +121,7 @@ namespace PGEws
                 void setSize(int w, int h);
 
                 void setScale(unsigned int scale);
+
 
                 virtual bool wOnUserCreate();
 
@@ -174,6 +179,8 @@ namespace PGEws
                 bool setMaxFPS(unsigned int id, float fps);
 
                 bool setHidden(unsigned int id, bool value);
+
+                bool setBodyDraggingType(unsigned int id, int value);
 
                 bool setIfHasBanner(unsigned int id, bool value);
 
@@ -324,6 +331,11 @@ namespace PGEws
                 maxFpsSet = value;
                 timeThreshold = 1.0f / fps;
                 frameTimer = timeThreshold;
+        }
+
+        void Window::setBodyDraggingType(int value)
+        {
+                bodyDraggingMouseType = value;
         }
 
         void Window::setHidden(bool value)
@@ -544,6 +556,16 @@ namespace PGEws
 
 		return true;
 	}
+
+        bool WindowList::setBodyDraggingType(unsigned int id, int value)
+        {
+		int i = getIndexOfId(id);
+		if (i == -1) return false;
+
+                windowList[i]->setBodyDraggingType(value);
+
+                return true;
+        }
 
 	bool WindowList::setHidden(unsigned int id, bool value)
 	{
