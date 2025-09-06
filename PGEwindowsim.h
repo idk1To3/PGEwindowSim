@@ -147,6 +147,7 @@ namespace PGEws
                         olc::vi2d selectionOffset;
                         int selectingMouseType = 0;
 
+                        bool resizing = false;
                         bool resizingWindowLeft = false;
                         bool resizingWindowDown = false;
                         bool resizingWindowRight = false;
@@ -713,7 +714,7 @@ namespace PGEws
                 if (!windowList[focusIndex]->canResizeX && !windowList[focusIndex]->canResizeY)
                         return;
 
-                if (!(resizingWindowLeft || resizingWindowDown || resizingWindowRight || resizingWindowUp))
+                if (!windowList[focusIndex]->resizing)
                 {
                         if (pge->GetMouse(0).bPressed)
                         {
@@ -728,21 +729,21 @@ namespace PGEws
                                 if (rectContainsPoint(mouseX, mouseY, win.posX + scaledSizeX, win.posY - bh, win.posX + scaledSizeX + 8, win.posY + scaledSizeY))
                                 {
                                         resizingWindowRight = true;
-                                        windowList[focusIndex]->resizing = true;
+                                        resizing = true;
                                         if (mouseY > win.posY + scaledSizeY - 12)
                                                 resizingWindowDown = true;
                                 }
                                 else if (rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh, win.posX-1, win.posY + scaledSizeY))
                                 {
                                         resizingWindowLeft = true;
-                                        windowList[focusIndex]->resizing = true;
+                                        resizing = true;
                                         if (mouseY > win.posY + scaledSizeY - 12)
                                                 resizingWindowDown = true;
                                 }
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY + scaledSizeY, win.posX + scaledSizeX + 8, win.posY + scaledSizeY + 8))
                                 {
                                         resizingWindowDown = true;
-                                        windowList[focusIndex]->resizing = true;
+                                        resizing = true;
                                         if (mouseX < win.posX + 12)
                                                 resizingWindowLeft = true;
                                         else if (mouseX > win.posX + scaledSizeX - 12)
@@ -751,12 +752,14 @@ namespace PGEws
                                 else if(rectContainsPoint(mouseX, mouseY, win.posX - 9, win.posY - bh - 8, win.posX + scaledSizeX + 8, win.posY - bh))
                                 {
                                         resizingWindowUp = true;
-                                        windowList[focusIndex]->resizing = true;
+                                        resizing = true;
                                         if(mouseX < win.posX + 12)
                                                 resizingWindowLeft = true;
                                         else if(mouseX > win.posX + scaledSizeX - 12)
                                                 resizingWindowRight = true;
                                 }
+
+                                windowList[focusIndex]->resizing = resizing;
                         }
                 }
                 else
@@ -863,7 +866,7 @@ namespace PGEws
         {
                 if (!leftClickSelected)
                 {
-                        if (pge->AnyMousePressed() && !resizingWindowLeft && !resizingWindowDown && !resizingWindowRight && !resizingWindowUp)
+                        if ((pge->GetMouse(0).bPressed || pge->GetMouse(1).bPressed || pge->GetMouse(2).bPressed) && !resizing)
                         {
                                 //std::cout << "Hi there\n";
                                 int mousePosX = pge->GetMouseX();
@@ -883,25 +886,18 @@ namespace PGEws
                                                                 w->posX + w->sizeX * w->scale, w->posY + w->sizeY * w->scale))
                                                 continue;
 
-                                        //std::cout << "inside window " << w->name << "\n";
-
                                         if(windowList[*i]->bodyDraggingMouseType >= 0 && pge->GetMouse(windowList[*i]->bodyDraggingMouseType).bPressed) //body dragging
                                         {
                                                 selectingMouseType = windowList[*i]->bodyDraggingMouseType;
                                                 dragging = true;
-
-                                                //std::cout << "body dragging\n";
                                         }
                                         else if(pge->GetMouse(0).bPressed && mousePosY < w->posY) //banner dragging
                                         {
                                                 selectingMouseType = 0;
                                                 dragging = true;
                                                 closingClick = true;
-
-                                                //std::cout << "banner dragging\n";
                                         }
 
-                                        //std::cout << "Dragging\n";
                                         updateOnClick(i, mousePosX, mousePosY, dragging, closingClick);
 
                                         break;
