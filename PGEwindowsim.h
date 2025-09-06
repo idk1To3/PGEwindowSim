@@ -1,3 +1,74 @@
+/*
+The Pixel Game Engine Window Simulator, by 1To3
+
+Minimal example:
+
+#define OLC_PGE_APPLICATION
+#include "olcPixelGameEngine.h"
+#define PGEWS_APPLICATION
+#include "PGEwindowsim.h"
+
+class MyWindow : public PGEws::Window
+{
+public:
+        MyWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+{ }
+
+        bool wOnUserCreate() override
+        {
+                return true;
+        };
+
+        bool wOnUserUpdate(float fElapsedTime) override
+        {
+                for (int x = 0; x < WindowWidth(); x++)
+                        for (int y = 0; y < WindowHeight(); y++)
+                                pge->Draw(x, y, olc::Pixel(rand() % 256, rand() % 256, rand() % 256));
+
+                return true;
+        };
+};
+
+class Application : public olc::PixelGameEngine
+{
+public:
+        Application() : win(this)
+        {
+                sAppName = "Application";
+        }
+
+        PGEws::WindowList win;
+
+        bool OnUserCreate() override
+        {
+                win.addNewWindow(new MyWindow(this,  0, "Name", 500, 500, 0, 0, ~(PGEws::CanClose)));
+                return true;
+        }
+
+        bool OnUserUpdate(float fElapsedtime) override
+        {
+                win.updateAll(fElapsedTime);
+                return true;
+        }
+
+        bool OnUserDestroy() override
+        {
+                win.destroyAll();
+                return true;
+        }
+}
+
+int main()
+{
+        Application demo;
+        if (demo.Construct(800, 550, 1, 1))
+                demo.Start();
+
+        return 0;
+}
+
+*/
+
 #pragma once
 #include "olcPixelGameEngine.h"
 #include <unordered_map>
@@ -49,7 +120,7 @@ namespace PGEws
                 int bodyDraggingMouseType = 2;
                 //-1 - body dragging disabled, 0 - left click dragging, 1 - right click dragging, 2 - middle click dragging
 
-                bool resizing = false;
+bool resizing = false;
 
                 int nameMax = 0;
                 std::string name;
