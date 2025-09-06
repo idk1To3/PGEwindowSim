@@ -11,13 +11,13 @@ Minimal example:
 class MyWindow : public PGEws::Window
 {
 public:
-        MyWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+        MyWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, posX, posY, width, height, permissions)
 { }
 
         bool wOnUserCreate() override
         {
                 return true;
-        };
+        }
 
         bool wOnUserUpdate(float fElapsedTime) override
         {
@@ -26,7 +26,7 @@ public:
                                 pge->Draw(x, y, olc::Pixel(rand() % 256, rand() % 256, rand() % 256));
 
                 return true;
-        };
+        }
 };
 
 class Application : public olc::PixelGameEngine
@@ -41,27 +41,32 @@ public:
 
         bool OnUserCreate() override
         {
-                win.addNewWindow(new MyWindow(this,  0, "Name", 0, 0, 500, 500, ~(PGEws::CanClose)));
+                win.addNewWindow(new MyWindow(this,  0, "Name", 0, 0, 130, 130));
+                win.setScale(0, 2);
+
                 return true;
         }
 
-        bool OnUserUpdate(float fElapsedtime) override
+        bool OnUserUpdate(float fElapsedTime) override
         {
+                Clear(olc::BLACK);
                 win.updateAll(fElapsedTime);
+
                 return true;
         }
 
         bool OnUserDestroy() override
         {
                 win.destroyAll();
+
                 return true;
         }
-}
+};
 
 int main()
 {
         Application demo;
-        if (demo.Construct(800, 550, 1, 1))
+        if (demo.Construct(300, 300, 2, 2))
                 demo.Start();
 
         return 0;
