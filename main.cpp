@@ -15,7 +15,7 @@ enum ids
 class LeftWindow : public PGEws::Window
 {
         public:
-                LeftWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+                LeftWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, posX, posY, width, height, permissions)
         { }
 
                 int x = 8;
@@ -50,7 +50,7 @@ class LeftWindow : public PGEws::Window
 class RightWindow : public PGEws::Window
 {
         public:
-                RightWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+                RightWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, posX, posY, width, height, permissions)
         { }
 
         public:
@@ -61,6 +61,7 @@ class RightWindow : public PGEws::Window
 
                 bool wOnUserUpdate(float fElapsedTime) override
                 {
+
                         pge->Clear(olc::BLUE);
                         pge->FillTriangle(-18, -49, rand() % WindowWidth(), rand() % WindowHeight(), rand() % WindowWidth(), rand() % WindowHeight(), olc::RED);
                         pge->DrawString(0, 0, std::to_string(1.0f / fElapsedTime), olc::BLACK);
@@ -83,7 +84,7 @@ class RightWindow : public PGEws::Window
 class WindowMenu : public PGEws::Window
 {
         public:
-                WindowMenu(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+                WindowMenu(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, posX, posY, width, height, permissions)
         { }
 
                 bool wOnUserCreate() override
@@ -113,8 +114,6 @@ class WindowMenu : public PGEws::Window
 
                         float mouseX = lGetMouseX();
                         float mouseY = lGetMouseY();
-
-                        std::cout << mouseX << " " << mouseY << "\n";
 
                         if (sqrtf((mouseX - 20) * (mouseX - 20) + (mouseY - 10) * (mouseY - 10)) < 10.0f)
                                 shouldBeFocused = 0;
@@ -149,10 +148,10 @@ class Application : public olc::PixelGameEngine
         public:
                 bool OnUserCreate() override
                 {
-                        win.addNewWindow(new LeftWindow(this,  left0, "Can do all\nSecond line", 20, 10, 0, 0));
-                        win.addNewWindow(new RightWindow(this, right1, "cant move", 200, 300, 500, 0, ~(PGEws::CanMove)));
-                        win.addNewWindow(new RightWindow(this, right0, "can move and close", 300, 300, 200, 0, PGEws::CanMove | PGEws::CanClose));
-                        win.addNewWindow(new WindowMenu(this, menu, "window menu", 40, 60, 400, 400, ~(PGEws::CanResizeY)));
+                        win.addNewWindow(new LeftWindow(this,  left0, "Can do all\nSecond line", 0, 0, 20, 10));
+                        win.addNewWindow(new RightWindow(this, right1, "cant move", 500, 0, 200, 300, ~(PGEws::CanMove)));
+                        win.addNewWindow(new RightWindow(this, right0, "can move and close", 200, 0, 300, 300, PGEws::CanMove | PGEws::CanClose));
+                        win.addNewWindow(new WindowMenu(this, menu, "window menu", 400, 400, 40, 60, ~(PGEws::CanResizeY)));
 
                         win.setMaxFPS(left0, 1.0f);
                         win.setMaxFPS(right0, 10.0f);
@@ -186,7 +185,7 @@ class Application : public olc::PixelGameEngine
                         win.updateAll(fElapsedTime);
 
                         if (GetKey(olc::Key::A).bPressed)
-                                win.addNewWindow(new LeftWindow(this, id++, "added window", 50, 50, 400, 400));
+                                win.addNewWindow(new LeftWindow(this, id++, "added window", 400, 400, 50, 50));
 
                         if (GetKey(olc::Key::DEL).bPressed)
                                 win.deleteWindow(win.getFocusedId());

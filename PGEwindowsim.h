@@ -11,7 +11,7 @@ Minimal example:
 class MyWindow : public PGEws::Window
 {
 public:
-        MyWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
+        MyWindow(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1) : Window(pge, id, name, width, height, posX, posY, permissions)
 { }
 
         bool wOnUserCreate() override
@@ -41,7 +41,7 @@ public:
 
         bool OnUserCreate() override
         {
-                win.addNewWindow(new MyWindow(this,  0, "Name", 500, 500, 0, 0, ~(PGEws::CanClose)));
+                win.addNewWindow(new MyWindow(this,  0, "Name", 0, 0, 500, 500, ~(PGEws::CanClose)));
                 return true;
         }
 
@@ -91,7 +91,7 @@ namespace PGEws
                 friend class WindowList;
 
                 public:
-                Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions = -1);
+                Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions = -1);
 
                 public:
                 olc::PixelGameEngine* const pge;
@@ -120,7 +120,7 @@ namespace PGEws
                 int bodyDraggingMouseType = 2;
                 //-1 - body dragging disabled, 0 - left click dragging, 1 - right click dragging, 2 - middle click dragging
 
-bool resizing = false;
+                bool resizing = false;
 
                 int nameMax = 0;
                 std::string name;
@@ -284,7 +284,7 @@ bool resizing = false;
 
         //Window implementation
 
-        Window::Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int width, int height, int posX, int posY, int permissions) : id(id), pge(pge), name(name), posX(posX+1), posY(posY+bannerHeight)
+        Window::Window(olc::PixelGameEngine* pge, unsigned int id, std::string name, int posX, int posY, int width, int height, int permissions) : id(id), pge(pge), name(name), posX(posX+1), posY(posY+bannerHeight)
         {
                 changePermissions(permissions);
 
@@ -836,13 +836,14 @@ bool resizing = false;
                 else
                 {
                         int scale = windowList[focusIndex]->scale;
-                        int bannerHeight = windowList[focusIndex]->bannerHeight;
+                        int bannerHeight = (windowList[focusIndex]->hasBanner ? windowList[focusIndex]->bannerHeight : 0);
                         if (pge->GetMouse(0).bReleased)
                         {
                                 resizingWindowLeft = false;
                                 resizingWindowDown = false;
                                 resizingWindowRight = false;
                                 resizingWindowUp = false;
+                                resizing = false;
                                 windowList[focusIndex]->resizing = false;
                         }
                         int newSizeX;
@@ -939,7 +940,6 @@ bool resizing = false;
                 {
                         if ((pge->GetMouse(0).bPressed || pge->GetMouse(1).bPressed || pge->GetMouse(2).bPressed) && !resizing)
                         {
-                                //std::cout << "Hi there\n";
                                 int mousePosX = pge->GetMouseX();
                                 int mousePosY = pge->GetMouseY();
 
